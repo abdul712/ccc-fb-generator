@@ -1,0 +1,52 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "ccc-fb-generator"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Worker settings
+[env.production]
+name = "ccc-fb-generator"
+
+[env.staging]
+name = "ccc-fb-generator-staging"
+
+# D1 Database bindings
+[[d1_databases]]
+binding = "DB"
+database_name = "ccc-content-db"
+database_id = "your-d1-database-id"
+
+# R2 Storage bindings
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "ccc-media-storage"
+
+# KV Storage bindings
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "your-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "CONFIG_KV"
+id = "your-config-kv-namespace-id"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+# Scheduled triggers (max 3)
+[[triggers]]
+crons = ["0 */6 * * *"]  # Every 6 hours for content discovery
+
+[[triggers]]
+crons = ["0 8,14,20 * * *"]  # 8 AM, 2 PM, 8 PM for posting
+
+[[triggers]]
+crons = ["0 2 * * *"]  # 2 AM daily for cleanup
+
+# Environment variables (secrets configured via wrangler secret put)
+[vars]
+NODE_ENV = "production"
+LOG_LEVEL = "info"
